@@ -1,4 +1,3 @@
-* Encoding: UTF-8.
 BEGIN PROGRAM.
 import spss
 import spssdata

@@ -11,9 +11,11 @@ Missing values in experimental designs can complicate statistical analysis. This
 The project implements estimation formulas for the following scenarios:
 
 1. **One Missing Value in Two-Way ANOVA**
+
    - Formula: $\hat{x} = \frac{rR+cC-G}{(r-1)(c-1)}$
-   
+
    where:
+
    - $\hat{x}$ is the estimated missing value
    - $r$ is the number of rows
    - $c$ is the number of columns
@@ -22,9 +24,11 @@ The project implements estimation formulas for the following scenarios:
    - $G$ is the total sum of all values
 
 2. **One Missing Value in Latin Square Design**
+
    - Formula: $\hat{x} = \frac{p(R+C+tr)-2G}{(p-1)(p-2)}$
-   
+
    where:
+
    - $\hat{x}$ is the estimated missing value
    - $p$ is the number of rows/columns (since it's a square)
    - $R$ is the sum of values in the row with the missing value
@@ -33,10 +37,13 @@ The project implements estimation formulas for the following scenarios:
    - $G$ is the total sum of all values
 
 3. **Two Missing Values in Two-Way ANOVA (Same Row, Different Column)**
+
    - Formula for $\hat{x}_1$: $\frac{rR+(c-1)C_1+C_2-G}{(r-1)(c-2)}$
+   <br>
    - Formula for $\hat{x}_2$: $\frac{rR+C_1+(c-1)C_2-G}{(r-1)(c-2)}$
-   
+
    where:
+
    - $\hat{x}_1, \hat{x}_2$ are the estimated missing values
    - $r$ is the number of rows
    - $c$ is the number of columns
@@ -45,10 +52,13 @@ The project implements estimation formulas for the following scenarios:
    - $G$ is the total sum of all values
 
 4. **Two Missing Values in Two-Way ANOVA (Different Row, Same Column)**
+
    - Formula for $\hat{x}_1$: $\frac{cC+(r-1)R_1+R_2-G}{(r-2)(c-1)}$
+   <br>
    - Formula for $\hat{x}_2$: $\frac{cC+R_1+(r-1)R_2-G}{(r-2)(c-1)}$
-   
+
    where:
+
    - $\hat{x}_1, \hat{x}_2$ are the estimated missing values
    - $r$ is the number of rows
    - $c$ is the number of columns
@@ -57,10 +67,13 @@ The project implements estimation formulas for the following scenarios:
    - $G$ is the total sum of all values
 
 5. **Two Missing Values in Two-Way ANOVA (Different Row, Different Column)**
+
    - Formula for $\hat{x}_1$: $\frac{FW_1-W_2}{F^2-1}$
+   <br>
    - Formula for $\hat{x}_2$: $\frac{FW_2-W_1}{F^2-1}$
-   
+
    where:
+
    - $\hat{x}_1, \hat{x}_2$ are the estimated missing values
    - $F = (r-1)(c-1)$
    - $W_i = rR_i+cC_i-G$
@@ -80,7 +93,7 @@ The project implements estimation formulas for the following scenarios:
 ## Requirements
 
 - SPSS with Python integration
-- Python libraries: NumPy, Pandas (if used)
+- Python 3.4
 
 ## Usage
 
