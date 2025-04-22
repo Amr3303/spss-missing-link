@@ -79,17 +79,38 @@ def estimate_two_missing_values_same_row_diff_cols(data):
 def main():
     data = load_data()
     print(data)
-    print("\n\n\n")  # Fix the newline syntax
+    print("\n\n\n")
 
     x_hat1, x_hat2, missing_data = estimate_two_missing_values_same_row_diff_cols(data)
 
-    if x_hat1 is not None or x_hat2 is not None:
+    if x_hat1 is not None and x_hat2 is not None:
         print("\nEstimated value for the row: {} and column: {} = {:.2f}".format(
             int(missing_data[0][1]), int(missing_data[0][2]), x_hat1))
         print("Estimated value for the row: {} and column: {} = {:.2f}".format(
             int(missing_data[1][1]), int(missing_data[1][2]), x_hat2))
+        
+        # Create SPSS syntax to update the missing values
+        update_syntax = []
+        
+        # Get the active dataset name
+        dataset_name = spss.ActiveDataset()
+        if not dataset_name:
+            dataset_name = '*'  # Use * if no specific dataset name
+            
+        # Create update commands for both missing values
+        update_syntax.append('if $casenum = {0} value{1} = {2:.4f}.'.format(
+            int(missing_data[0][1]), int(missing_data[0][2]), x_hat1))
+        update_syntax.append('if $casenum = {0} value{1} = {2:.4f}.'.format(
+            int(missing_data[1][1]), int(missing_data[1][2]), x_hat2))
+        update_syntax.append('execute.')
+        
+        # Execute the syntax
+        for cmd in update_syntax:
+            spss.Submit(cmd)
+            
+        print("\nMissing values have been updated in the dataset.")
     else:
-        print("Unable to compute the missing value, boo hoo")
+        print("Unable to compute the missing values, boo hoo")
 
 main()
 

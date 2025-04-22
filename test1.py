@@ -78,18 +78,43 @@ def estimate_two_missing_values_same_row_diff_cols(data):
 
 def main():
     data = load_data()
-    print(data)
-    print("\n\n\n")  # Fix the newline syntax
+    print("Original data:", data)
+    print("\n\n\n")
 
     x_hat1, x_hat2, missing_data = estimate_two_missing_values_same_row_diff_cols(data)
 
-    if x_hat1 is not None or x_hat2 is not None:
+    if x_hat1 is not None and x_hat2 is not None:
         print("\nEstimated value for the row: {} and column: {} = {:.2f}".format(
             int(missing_data[0][1]), int(missing_data[0][2]), x_hat1))
         print("Estimated value for the row: {} and column: {} = {:.2f}".format(
             int(missing_data[1][1]), int(missing_data[1][2]), x_hat2))
+        
+        # Update the values in our data list
+        for i, item in enumerate(data):
+            if item[0] == missing_data[0][1] and item[1] == missing_data[0][2]:
+                data[i][2] = x_hat1
+            elif item[0] == missing_data[1][1] and item[1] == missing_data[1][2]:
+                data[i][2] = x_hat2
+        
+        # Convert the data back to SPSS format using DO IF commands
+        spss_commands = []
+        # For first missing value (row II, column A)
+        spss_commands.append("DO IF ($CASENUM = 5).")  # Case 5 corresponds to II A
+        spss_commands.append("COMPUTE value = {:.4f}.".format(x_hat1))
+        spss_commands.append("END IF.")
+        # For second missing value (row II, column C)
+        spss_commands.append("DO IF ($CASENUM = 7).")  # Case 7 corresponds to II C
+        spss_commands.append("COMPUTE value = {:.4f}.".format(x_hat2))
+        spss_commands.append("END IF.")
+        spss_commands.append("EXECUTE.")
+        
+        # Execute all commands at once
+        for cmd in spss_commands:
+            spss.Submit(cmd)
+            
+        print("\nComplete dataset has been updated with estimated values.")
     else:
-        print("Unable to compute the missing value, boo hoo")
+        print("Unable to compute the missing values, boo hoo")
 
 main()
 
