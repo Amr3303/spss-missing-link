@@ -1,3 +1,9 @@
+SET PRINTBACK=NO.
+BEGIN PROGRAM python3.
+import spss
+import spssdata
+
+
 def long_to_wide(data):
     """Convert long format data to wide format."""
     # Step 1: Get all unique row and column labels
@@ -522,6 +528,23 @@ def process_data(data):
         for row in data:
             print("%s\t%s\t%.2f" % (row[0], row[1], row[2]))
     
+    # Overwrite the data in SPSS
+    spss.StartDataStep()
+    dataset = spss.Dataset()
+    cases = dataset.cases
+    
+    # Delete all existing cases
+    while len(cases):
+        del cases[0]
+    
+    # Insert the updated data
+    for row in data:
+        dataset.cases.insert(row)
+    
+    dataset.close()
+    spss.EndDataStep()
+    print("\nSPSS dataset has been updated with the estimated values.")
+    
     return data
 
 def main():
@@ -529,6 +552,7 @@ def main():
     try:
         print("Loading data...")
         data = load_data()
+        print(data)
         
         if data:
             # Process the data
@@ -539,4 +563,11 @@ def main():
             
     except Exception as e:
         print("Error: %s" % str(e))
+
+
+main()
+
+END PROGRAM.
+
+
 

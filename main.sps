@@ -1,6 +1,6 @@
 ﻿* Encoding: UTF-8.
 SET PRINTBACK=NO.
-BEGIN PROGRAM.
+BEGIN PROGRAM python3.
 import spss
 import spssdata
 
@@ -529,6 +529,23 @@ def process_data(data):
         for row in data:
             print("%s\t%s\t%.2f" % (row[0], row[1], row[2]))
     
+    # Overwrite the data in SPSS
+    spss.StartDataStep()
+    dataset = spss.Dataset()
+    cases = dataset.cases
+    
+    # Delete all existing cases
+    while len(cases):
+        del cases[0]
+    
+    # Insert the updated data
+    for row in data:
+        dataset.cases.insert(row)
+    
+    dataset.close()
+    spss.EndDataStep()
+    print("\nSPSS dataset has been updated with the estimated values.")
+    
     return data
 
 def main():
@@ -552,6 +569,3 @@ def main():
 main()
 
 END PROGRAM.
-
-
-
