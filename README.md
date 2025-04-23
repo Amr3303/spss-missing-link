@@ -23,20 +23,7 @@ The project implements estimation formulas for the following scenarios:
    - $C$ is the sum of values in the column with the missing value
    - $G$ is the total sum of all values
 
-2. **One Missing Value in Latin Square Design**
-
-   - Formula: $\hat{x} = \frac{p(R+C+tr)-2G}{(p-1)(p-2)}$
-
-   where:
-
-   - $\hat{x}$ is the estimated missing value
-   - $p$ is the number of rows/columns (since it's a square)
-   - $R$ is the sum of values in the row with the missing value
-   - $C$ is the sum of values in the column with the missing value
-   - $tr$ is the sum of values in the treatment (or additional factor)
-   - $G$ is the total sum of all values
-
-3. **Two Missing Values in Two-Way ANOVA (Same Row, Different Column)**
+2. **Two Missing Values in Two-Way ANOVA (Same Row, Different Column)**
 
    - Formula for $\hat{x}_1$: $\frac{rR+(c-1)C_1+C_2-G}{(r-1)(c-2)}$
    <br>
@@ -51,7 +38,7 @@ The project implements estimation formulas for the following scenarios:
    - $C_1, C_2$ are the sums of values in the columns with the missing values
    - $G$ is the total sum of all values
 
-4. **Two Missing Values in Two-Way ANOVA (Different Row, Same Column)**
+3. **Two Missing Values in Two-Way ANOVA (Different Row, Same Column)**
 
    - Formula for $\hat{x}_1$: $\frac{cC+(r-1)R_1+R_2-G}{(r-2)(c-1)}$
    <br>
@@ -66,7 +53,7 @@ The project implements estimation formulas for the following scenarios:
    - $R_1, R_2$ are the sums of values in the rows with the missing values
    - $G$ is the total sum of all values
 
-5. **Two Missing Values in Two-Way ANOVA (Different Row, Different Column)**
+4. **Two Missing Values in Two-Way ANOVA (Different Row, Different Column)**
 
    - Formula for $\hat{x}_1$: $\frac{FW_1-W_2}{F^2-1}$
    <br>
@@ -81,6 +68,19 @@ The project implements estimation formulas for the following scenarios:
    - $c$ is the number of columns
    - $R_i$ is the sum of values in the row with the missing value $i$
    - $C_i$ is the sum of values in the column with the missing value $i$
+   - $G$ is the total sum of all values
+
+5. **One Missing Value in Latin Square Design**
+
+   - Formula: $\hat{x} = \frac{p(R+C+tr)-2G}{(p-1)(p-2)}$
+
+   where:
+
+   - $\hat{x}$ is the estimated missing value
+   - $p$ is the number of rows/columns (since it's a square)
+   - $R$ is the sum of values in the row with the missing value
+   - $C$ is the sum of values in the column with the missing value
+   - $tr$ is the sum of values in the treatment (or additional factor)
    - $G$ is the total sum of all values
 
 ## Features
