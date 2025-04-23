@@ -1,4 +1,5 @@
 ﻿* Encoding: UTF-8.
+SET PRINTBACK=NO.
 BEGIN PROGRAM.
 import spss
 import spssdata
