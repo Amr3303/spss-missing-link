@@ -148,6 +148,8 @@ def detect_missing_pattern(data, data_structure):
             return "no_missing", None
         elif missing_count == 1:
             return "one_missing", missing_positions
+        elif missing_count == 2:
+            return "two_missing", missing_positions
         else:
             return "too_many_missing", missing_positions
             
@@ -441,6 +443,122 @@ def estimate_missing_value_latin(data, p):
     
     return x_hat, missing_idx, missing_row, missing_col, missing_tr
 
+def estimate_two_missing_values_latin(data, p):
+    """
+    Estimate two missing values in a Latin Square design.
+    
+    Parameters:
+    data -- list of lists where each inner list is [row, column, treatment, value]
+    p -- number of rows/columns (since it's a Latin Square)
+    
+    Returns:
+    x1, x2 -- the estimated missing values
+    """
+    # Find the positions of the two missing values
+    missing_data = []
+    for i, item in enumerate(data):
+        if item[3] is None:
+            missing_data.append((i, int(item[0]), int(item[1]), int(item[2])))
+    
+    if len(missing_data) != 2:
+        return "Error: Expected exactly two missing values"
+    
+    # Unpack missing data
+    idx1, row1, col1, tr1 = missing_data[0]
+    idx2, row2, col2, tr2 = missing_data[1]
+    
+    # Calculate f = (r-1)(r-2) to simplify expressions
+    f = (p - 1) * (p - 2)
+    
+    # Calculate G (total sum of all values)
+    G = sum(item[3] for item in data if item[3] is not None)
+    print("G (total sum):", G)
+    
+    # Calculate row totals excluding missing values
+    R1 = sum(item[3] for item in data if item[0] == row1 and item[3] is not None)
+    R2 = sum(item[3] for item in data if item[0] == row2 and item[3] is not None)
+    
+    # Calculate column totals excluding missing values
+    C1 = sum(item[3] for item in data if item[1] == col1 and item[3] is not None)
+    C2 = sum(item[3] for item in data if item[1] == col2 and item[3] is not None)
+    
+    # Calculate treatment totals excluding missing values
+    T1 = sum(item[3] for item in data if item[2] == tr1 and item[3] is not None)
+    T2 = sum(item[3] for item in data if item[2] == tr2 and item[3] is not None)
+    
+    # Print intermediate values for verification
+    print("p (square size):", p)
+    print("f = (p-1)(p-2):", f)
+    print("R1 (sum of row " + str(row1) + "):", R1)
+    print("R2 (sum of row " + str(row2) + "):", R2)
+    print("C1 (sum of column " + str(col1) + "):", C1)
+    print("C2 (sum of column " + str(col2) + "):", C2)
+    print("T1 (sum of treatment " + str(tr1) + "):", T1)
+    print("T2 (sum of treatment " + str(tr2) + "):", T2)
+    
+    # Determine which case we're dealing with
+    if tr1 == tr2 and row1 != row2 and col1 != col2:
+        print("Case I: Two missing values in the same treatment but different rows and columns")
+        # Use T12 as the common treatment total
+        T12 = T1  # or T2, they're the same
+        
+        # Calculate Q1 and Q2
+        Q1 = p * (R1 + C1 + T12) - 2 * G
+        Q2 = p * (R2 + C2 + T12) - 2 * G
+        
+        print("Q1:", Q1)
+        print("Q2:", Q2)
+        
+        # Solve the system of equations
+        # (f)y1 - (p-2)y2 = Q1
+        # -(p-2)y1 + (f)y2 = Q2
+        
+        # Using Cramer's rule
+        det = f * f - (p - 2) * (p - 2)
+        y1 = (f * Q1 + (p - 2) * Q2) / det
+        y2 = ((p - 2) * Q1 + f * Q2) / det
+        
+    elif row1 == row2 and col1 != col2 and tr1 != tr2:
+        print("Case III: Two missing values in the same row but different columns and treatments")
+        # Use R12 as the common row total
+        R12 = R1  # or R2, they're the same
+        
+        # Calculate Q1 and Q2
+        Q1 = p * (R12 + C1 + T1) - 2 * G
+        Q2 = p * (R12 + C2 + T2) - 2 * G
+        
+        print("Q1:", Q1)
+        print("Q2:", Q2)
+        
+        # Solve the system of equations (same structure as Case I)
+        # (f)y1 - (p-2)y2 = Q1
+        # -(p-2)y1 + (f)y2 = Q2
+        
+        # Using Cramer's rule
+        det = f * f - (p - 2) * (p - 2)
+        y1 = (f * Q1 + (p - 2) * Q2) / det
+        y2 = ((p - 2) * Q1 + f * Q2) / det
+        
+    else:
+        print("Case II: Missing values in different rows, columns, and treatments")
+        # Calculate Q1 and Q2
+        Q1 = p * (R1 + C1 + T1) - 2 * G
+        Q2 = p * (R2 + C2 + T2) - 2 * G
+        
+        print("Q1:", Q1)
+        print("Q2:", Q2)
+        
+        # Solve the system of equations
+        # (f)y1 + 2y2 = Q1
+        # 2y1 + (f)y2 = Q2
+        
+        # Direct solution
+        f_squared_minus_4 = f * f - 4
+        y1 = (f * Q1 - 2 * Q2) / f_squared_minus_4
+        y2 = (f * Q2 - 2 * Q1) / f_squared_minus_4
+    
+    return y1, y2, missing_data
+
 def process_data(data):
     """Main function to process the data based on its structure and missing value pattern."""
     if not data:
@@ -464,7 +582,7 @@ def process_data(data):
         return data
     
     if pattern == "too_many_missing":
-        print("Error: Too many missing values. This script can handle at most two missing values for Two-Way ANOVA and one for Latin Square.")
+        print("Error: Too many missing values. This script can handle at most two missing values for Two-Way ANOVA and two for Latin Square.")
         return data
     
     # Process based on the structure and pattern
@@ -515,6 +633,17 @@ def process_data(data):
                 x_hat, idx, row, col, tr = result
                 print("\nEstimated value for row %s, column %s, treatment %s: %.2f" % (row, col, tr, x_hat))
                 data[idx][3] = x_hat
+        elif pattern == "two_missing":
+            # p is the size of the Latin Square
+            p = rows
+            result = estimate_two_missing_values_latin(data, p)
+            if isinstance(result, tuple):
+                y1, y2, missing_data = result
+                print("\nEstimated values:")
+                print("Row %s, Column %s, Treatment %s: %.2f" % (missing_data[0][1], missing_data[0][2], missing_data[0][3], y1))
+                print("Row %s, Column %s, Treatment %s: %.2f" % (missing_data[1][1], missing_data[1][2], missing_data[1][3], y2))
+                data[missing_data[0][0]][3] = y1
+                data[missing_data[1][0]][3] = y2
     
     # Display the updated data
     print("\nUpdated data:")
